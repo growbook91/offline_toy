@@ -1,6 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+import 'firebase_options.dart';
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -48,16 +56,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
+  CollectionReference message = FirebaseFirestore.instance.collection('message');
+  String showText='';
   void _incrementCounter() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      message.doc('1').get().then((value){
+        var temp = value.data() as Map<String, dynamic>;
+        showText = temp['text'];
+      });
     });
   }
 
@@ -82,12 +88,12 @@ class _MyHomePageState extends State<MyHomePage> {
           // Column is also a layout widget. It takes a list of children and
           // arranges them vertically. By default, it sizes itself to fit its
           // children horizontally, and tries to be as tall as its parent.
-          //
+          
           // Invoke "debug painting" (press "p" in the console, choose the
           // "Toggle Debug Paint" action from the Flutter Inspector in Android
           // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
           // to see the wireframe for each widget.
-          //
+          // 
           // Column has various properties to control how it sizes itself and
           // how it positions its children. Here we use mainAxisAlignment to
           // center the children vertically; the main axis here is the vertical
@@ -95,13 +101,9 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+              '$showText',
+            )
           ],
         ),
       ),
